@@ -12,7 +12,7 @@ Vim() {
 
 Git() {
     $INSTALL git
-    if [ -n "`git config --list | grep user.email`" ]; then
+    if [ -z "`git config --list | grep user.email`" ]; then
         echo -n "Please enter your email for git: "
         read email
         echo -n "Please enter your user name for git: "
