@@ -12,12 +12,14 @@ Vim() {
 
 Git() {
     $INSTALL git
-    echo -n "Please enter your email for git: "
-    read email
-    echo -n "Please enter your user name for git: "
-    read username
-    git config --global user.email "$email"
-    git config --global user.name "$username"
+    if [ -n "`git config --list | grep user.email`" ]; then
+        echo -n "Please enter your email for git: "
+        read email
+        echo -n "Please enter your user name for git: "
+        read username
+        git config --global user.email "$email"
+        git config --global user.name "$username"
+    fi
 }
 
 GitCacheTimeout() {
