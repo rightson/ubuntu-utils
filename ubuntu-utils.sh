@@ -5,7 +5,7 @@ INSTALL="$APT_GET install -y"
 
 Vim() {
     $INSTALL vim
-    $INSTALL ctags 
+    $INSTALL ctags
     $INSTALL cscope
     git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 }
@@ -56,7 +56,7 @@ Yarn() {
 Mongodb() {
     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
     echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
-    sudo apt-get update 
+    sudo apt-get update
     sudo apt-get install -y mongodb-org
 }
 
@@ -91,7 +91,7 @@ Basics() {
 }
 
 GuiBasics() {
-    $INSTALL vim-gnome 
+    $INSTALL vim-gnome
     $INSTALL terminator
     $INSTALL easystroke
     $INSTALL xdotool
@@ -103,22 +103,28 @@ Custom() {
 }
 
 Hostname() {
-    sudo hostnamectl set-hostname $1
+    local hostname=/etc/hostname
+    local hosts=/etc/hosts
+    local old_name=`cat $hostname`
+    local new_name=$1
+    sudo hostnamectl set-hostname $new_name
+    sudo sed -i "s/$old_name/$new_name/g" $hostname
+    echo "127.0.1.1 $new_name" | sudo tee --append $hosts
     sudo systemctl restart systemd-logind.service
 }
 
 Update() {
-    sudo apt-get update 
-    sudo apt-get -y upgrade 
-    sudo apt-get -y dist-upgrade 
+    sudo apt-get update
+    sudo apt-get -y upgrade
+    sudo apt-get -y dist-upgrade
     sudo apt autoremove -y
 }
 
-if [ -z $1 ]; then 
+if [ -z $1 ]; then
     echo "Usage: $0 [Options]"
     echo ""
     echo "Combo Options:"
-    echo "  Basics      - includes vim, git, zsh, tmux, openssh-server, tree, build-essentila" 
+    echo "  Basics      - includes vim, git, zsh, tmux, openssh-server, tree, build-essentila"
     echo "  Gui_basics  - includes vim-gnome, terminator, easystroke, xdotool, filezilla"
     echo "  Update      - run apt-get update/upgrad/dist-upgrade and autoremove sequentially"
     echo "  Custom      - run your own custom combo installation"
