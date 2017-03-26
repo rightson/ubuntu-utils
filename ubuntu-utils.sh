@@ -3,86 +3,92 @@
 APT_GET="sudo apt-get"
 INSTALL="$APT_GET install -y"
 
-vim() {
+Vim() {
     $INSTALL vim
     $INSTALL ctags 
     $INSTALL cscope
     git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 }
 
-git() {
+Git() {
     $INSTALL git
-    echo "Please enter your email for git: "
+    echo -n "Please enter your email for git: "
     read email
-    echo "Please enter your user name for git: "
+    echo -n "Please enter your user name for git: "
     read username
     git config --global user.email "$email"
     git config --global user.name "$username"
 }
 
-zsh() {
+GitCacheTimeout() {
+    echo -n "Please enter your timeout of git password cache in seconds: "
+    read timeout
+    git config credential.helper "cache --timeout=$timeout"
+}
+
+Zsh() {
     $INSTALL zsh
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 }
 
-tmux() {
+Tmux() {
     $INSTALL tmux
     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 }
 
-ssh() {
+Ssh() {
     $INSTALL openssh-server
 }
 
-nvm() {
+Nvm() {
     curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.1/install.sh | bash
     nvm install stable
 }
 
-yarn() {
+Yarn() {
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
     sudo apt-get update && sudo apt-get install -y yarn
 }
 
-mongodb() {
+Mongodb() {
     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
     echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
     sudo apt-get update 
     sudo apt-get install -y mongodb-org
 }
 
-jdk() {
+Jdk() {
     $INSTALL openjdk-8-jre
 }
 
-linux_image() {
+LinuxImage() {
     $APT_GET build-dep -y linux-image-$(uname -r)
 }
 
-samba() {
+Samba() {
     $INSTALL samba samba-common system-config-samba
     sudo smbpasswd -a `id -u`
 }
 
-nvidia() {
+Nvidia() {
     sudo add-apt-repository -y ppa:graphics-drivers/ppa
     sudo apt-get update
     $INSTALL nvidia-375
     sudo apt-get -f install
 }
 
-basics() {
-    vim
-    git
-    zsh
-    tmux
-    ssh
+Basics() {
+    Vim
+    Git
+    Zsh
+    Tmux
+    Ssh
     $INSTALL tree
     $INSTALL build-essential
 }
 
-gui_basics() {
+GuiBasics() {
     $INSTALL vim-gnome 
     $INSTALL terminator
     $INSTALL easystroke
@@ -90,11 +96,11 @@ gui_basics() {
     $INSTALL filezilla
 }
 
-custom() {
+Custom() {
     $INSTALL ibus-chewing
 }
 
-update() {
+Update() {
     sudo apt-get update 
     sudo apt-get -y upgrade 
     sudo apt-get -y dist-upgrade 
@@ -105,13 +111,14 @@ if [ -z $1 ]; then
     echo "Usage: $0 [Options]"
     echo ""
     echo "Combo Options:"
-    echo "  basics      - includes vim, git, zsh, tmux, openssh-server, tree, build-essentila" 
-    echo "  gui_basics  - includes vim-gnome, terminator, easystroke, xdotool, filezilla"
-    echo "  update      - run apt-get update/upgrad/dist-upgrade and autoremove sequentially"
-    echo "  custom      - run your own custom combo installation"
+    echo "  Basics      - includes vim, git, zsh, tmux, openssh-server, tree, build-essentila" 
+    echo "  Gui_basics  - includes vim-gnome, terminator, easystroke, xdotool, filezilla"
+    echo "  Update      - run apt-get update/upgrad/dist-upgrade and autoremove sequentially"
+    echo "  Custom      - run your own custom combo installation"
     echo ""
     echo "Individual Options:"
-    echo "  vim | git | zsh | tmux | ssh | nvm | yarn | mongodb | jdk | linux_image | samba | nvidia"
+    echo "  Vim | Git | Zsh | Tmux | Ssh | Nvm | Yarn | Mongodb | Jdk | LinuxImage | Samba | Nvidia"
+    echo "  GitCacheTimeout"
 else
     $*
 fi
