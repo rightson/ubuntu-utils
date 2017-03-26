@@ -100,6 +100,19 @@ Custom() {
     $INSTALL ibus-chewing
 }
 
+Hostname() {
+    local hostname_path=/etc/hostname
+    local hosts_path=/etc/hosts
+    local old_name=`cat $hostname_path`
+    local new_name=$1
+    echo "rename from $old_name to $new_name"
+    sudo sed -i "s/$old_name/$new_name/g" $hostname_path
+    sudo sed -i "s/$old_name/$new_name/g" $hosts_path
+    sudo systemctl restart systemd-logind.service
+    echo "hostname:"
+    hostname
+}
+
 Update() {
     sudo apt-get update 
     sudo apt-get -y upgrade 
