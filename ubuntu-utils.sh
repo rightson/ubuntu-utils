@@ -129,10 +129,10 @@ Hostname() {
     local hosts=/etc/hosts
     local old_name=`cat $hostname`
     local new_name=$1
-    sudo hostnamectl set-hostname $new_name
+    echo "set hostname to $new_name from $old_name"
     sudo sed -i "s/$old_name/$new_name/g" $hostname
-    echo "127.0.1.1 $new_name" | sudo tee --append $hosts
-    sudo systemctl restart systemd-logind.service
+    sudo sed -i "s/$old_name/$new_name/g" $hosts
+    exit 0
 }
 
 Update() {
