@@ -77,7 +77,8 @@ Samba() {
 Nvidia() {
     sudo add-apt-repository -y ppa:graphics-drivers/ppa
     sudo apt-get update
-    $INSTALL nvidia-375
+    local latestVersion=`apt-cache search nvidia-\d+ | tail -n 1 | cut -d ' ' -f 1`
+    $INSTALL latestVersion
     sudo apt-get -f install
 }
 
