@@ -33,6 +33,10 @@ Zsh() {
     $INSTALL curl
     $INSTALL zsh
     chsh -s `which zsh`
+    local ohmyzsh=$HOME/.oh-my-zsh 
+    if [ -d $ohmyzsh ]; then
+        rm -fr $ohmyzsh
+    fi
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 }
 
