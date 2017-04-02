@@ -45,6 +45,17 @@ Ssh() {
     $INSTALL openssh-server
 }
 
+Python() {
+    $INSTALL python3-virtualenv
+    $INSTALL python3-venv
+    $INSTALL python3-pip
+    sudo -H pip3 install --upgrade pip
+    $INSTALL python3-dev
+    $INSTALL ipython3
+    $INSTALL ipython3-notebook
+    sudo -H pip3 install jupyter
+}
+
 Nvm() {
     curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.1/install.sh | bash
     nvm install stable
