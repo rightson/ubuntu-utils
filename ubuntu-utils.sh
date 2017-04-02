@@ -120,8 +120,12 @@ GuiBasics() {
     $INSTALL filezilla
 }
 
-Custom() {
+Chewing() {
     $INSTALL ibus-chewing
+}
+
+Custom() {
+    echo "Define your custom action"
 }
 
 Hostname() {
@@ -153,7 +157,7 @@ if [ -z $1 ]; then
     echo ""
     echo "Individual Options:"
     echo "  Vim | Git | Zsh | Tmux | Ssh | Nvm | Yarn | Mongodb | Jdk | LinuxImage | Samba | Nvidia"
-    echo "  GitCacheTimeout"
+    echo "  GitCacheTimeout | Chewing | Hostname"
 else
     $*
 fi
