@@ -2,6 +2,24 @@
 
 APT_GET="sudo apt-get"
 INSTALL="$APT_GET install -y"
+UPDATE="$APT_GET update"
+
+Usage() {
+    echo "Usage: $0 [Options]"
+    echo ""
+    echo "Combo Options:"
+    echo "  Basics      - includes vim, git, zsh, tmux, openssh-server, tree, build-essentila"
+    echo "  Gui_basics  - includes vim-gnome, terminator, easystroke, xdotool, filezilla"
+    echo "  Update      - run apt-get update/upgrad/dist-upgrade and autoremove sequentially"
+    echo "  Custom      - run your own custom combo installation"
+    echo ""
+    echo "Individual Options:"
+    echo "  Vim | Git | GitCacheTimeout | Zsh | Tmux | Ssh | Docker | DockerCompose"
+    echo "  Golang | Nvm | Yarn | Mongodb | Jdk | LinuxImage | Samba | Nvidia"
+    echo "  LinuxImage | Samba | Nvidia"
+    echo "  AptOverHttps"
+    exit 0
+}
 
 Vim() {
     $INSTALL vim
@@ -42,6 +60,12 @@ Ssh() {
     $INSTALL openssh-server
 }
 
+Golang() {
+    sudo add-apt-repository -y ppa:longsleep/golang-backports
+    $UPDATE
+    $INSTALL golang-go
+}
+
 Nvm() {
     curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.1/install.sh | bash
     nvm install stable
@@ -50,14 +74,14 @@ Nvm() {
 Yarn() {
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-    sudo apt-get update && sudo apt-get install -y yarn
+    $UPDATE && $INSTALL yarn
 }
 
 Mongodb() {
     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
     echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
-    sudo apt-get update
-    sudo apt-get install -y mongodb-org
+    $UPDATE
+    $INSTALL mongodb-org
 }
 
 Jdk() {
@@ -75,20 +99,20 @@ Samba() {
 
 Nvidia() {
     sudo add-apt-repository -y ppa:graphics-drivers/ppa
-    sudo apt-get update
+    $UPDATE
     $INSTALL nvidia-375
     sudo apt-get -f install
 }
 
 AptOverHttps() {
-   sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+   $INSTALL apt-transport-https ca-certificates curl software-properties-common
 }
 
 Docker() {
 	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 	sudo add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-	sudo apt-get update
-	sudo apt-get install -y docker-ce
+	$UPDATE
+	$INSTALL docker-ce
 }
 
 DockerCompose() {
@@ -136,24 +160,14 @@ Hostname() {
 }
 
 Update() {
-    sudo apt-get update
+    $UPDATE
     sudo apt-get -y upgrade
     sudo apt-get -y dist-upgrade
     sudo apt autoremove -y
 }
 
-if [ -z $1 ]; then
-    echo "Usage: $0 [Options]"
-    echo ""
-    echo "Combo Options:"
-    echo "  Basics      - includes vim, git, zsh, tmux, openssh-server, tree, build-essentila"
-    echo "  Gui_basics  - includes vim-gnome, terminator, easystroke, xdotool, filezilla"
-    echo "  Update      - run apt-get update/upgrad/dist-upgrade and autoremove sequentially"
-    echo "  Custom      - run your own custom combo installation"
-    echo ""
-    echo "Individual Options:"
-    echo "  Vim | Git | Zsh | Tmux | Ssh | Nvm | Yarn | Mongodb | Jdk | LinuxImage | Samba | Nvidia"
-    echo "  GitCacheTimeout"
+if [ -z "$1" ]; then
+    Usage
 else
     $*
 fi
