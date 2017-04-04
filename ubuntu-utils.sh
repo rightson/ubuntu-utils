@@ -37,6 +37,7 @@ Git() {
         read username
         git config --global user.email "$email"
         git config --global user.name "$username"
+        git config --global push.default matching
     fi
 }
 
@@ -47,7 +48,13 @@ GitCacheTimeout() {
 }
 
 Zsh() {
+    $INSTALL curl
     $INSTALL zsh
+    chsh -s `which zsh`
+    local ohmyzsh=$HOME/.oh-my-zsh 
+    if [ -d $ohmyzsh ]; then
+        rm -fr $ohmyzsh
+    fi
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 }
 
@@ -58,6 +65,17 @@ Tmux() {
 
 Ssh() {
     $INSTALL openssh-server
+}
+
+Python() {
+    $INSTALL python3-virtualenv
+    $INSTALL python3-venv
+    $INSTALL python3-pip
+    sudo -H pip3 install --upgrade pip
+    $INSTALL python3-dev
+    $INSTALL ipython3
+    $INSTALL ipython3-notebook
+    sudo -H pip3 install jupyter
 }
 
 Golang() {
@@ -100,7 +118,8 @@ Samba() {
 Nvidia() {
     sudo add-apt-repository -y ppa:graphics-drivers/ppa
     $UPDATE
-    $INSTALL nvidia-375
+    local latestVersion=`apt-cache search nvidia-\d+ | tail -n 1 | cut -d ' ' -f 1`
+    $INSTALL latestVersion
     sudo apt-get -f install
 }
 
@@ -144,8 +163,12 @@ GuiBasics() {
     $INSTALL filezilla
 }
 
-Custom() {
+Chewing() {
     $INSTALL ibus-chewing
+}
+
+Custom() {
+    echo "Define your custom action"
 }
 
 Hostname() {
@@ -153,10 +176,10 @@ Hostname() {
     local hosts=/etc/hosts
     local old_name=`cat $hostname`
     local new_name=$1
-    sudo hostnamectl set-hostname $new_name
+    echo "set hostname to $new_name from $old_name"
     sudo sed -i "s/$old_name/$new_name/g" $hostname
-    echo "127.0.1.1 $new_name" | sudo tee --append $hosts
-    sudo systemctl restart systemd-logind.service
+    sudo sed -i "s/$old_name/$new_name/g" $hosts
+    exit 0
 }
 
 Update() {
