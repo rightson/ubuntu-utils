@@ -17,7 +17,7 @@ Usage() {
     echo "  Vim | Git | GitCacheTimeout | Zsh | Tmux | Ssh | Docker | DockerCompose"
     echo "  Golang | Nvm | Yarn | Mongodb | Jdk | LinuxImage | Samba | Nvidia"
     echo "  LinuxImage | Samba | Nvidia"
-    echo "  AptOverHttps"
+    echo "  AptOverHttps | SaveAllVBox"
     exit 0
 }
 
@@ -143,6 +143,13 @@ DockerCompose() {
         echo "docker-compose installed at $dst"
     fi
     $dst --version
+}
+
+SaveAllVBox() {
+    local option=${1-savestate}
+    cmd="VBoxManage list runningvms | cut -d ' ' -f1 | xargs -I{} VBoxManage controlvm {} $option"
+    echo $cmd
+    $cmd
 }
 
 Basics() {
