@@ -7,18 +7,30 @@ UPDATE="$APT_GET update"
 Usage() {
     echo "Usage: $0 [Options]"
     echo ""
-    echo "Combo Options:"
-    echo "  Basics      - includes vim, git, zsh, tmux, openssh-server, tree, build-essentila"
-    echo "  Gui_basics  - includes vim-gnome, terminator, easystroke, xdotool, filezilla"
-    echo "  Update      - run apt-get update/upgrad/dist-upgrade and autoremove sequentially"
-    echo "  Custom      - run your own custom combo installation"
+    echo "Options:"
+    echo "    Update      - run apt-get update/upgrad/dist-upgrade and autoremove sequentially"
+    echo "  Installation Helpers:"
+    echo "    Vim | Git | | Zsh | Tmux | Ssh"
+    echo "    Golang | Python"
+    echo "    Nvm | Yarn | Jdk | LinuxImage"
+    echo "    Docker | DockerCompose"
+    echo "    Mosquitto | Mongodb | Samba"
+    echo "    Nvidia"
+    echo "  Configuration Helpers:"
+    echo "    GitCacheTimeout | AptOverHttps | SaveAllVBox"
+    echo "  Other Helpers:"
+    echo "    Basics      - includes vim, git, zsh, tmux, openssh-server, tree, build-essentila"
+    echo "    Gui_basics  - includes vim-gnome, terminator, easystroke, xdotool, filezilla"
+    echo "    Custom      - run your own custom combo installation"
     echo ""
-    echo "Individual Options:"
-    echo "  Vim | Git | GitCacheTimeout | Zsh | Tmux | Ssh | Docker | DockerCompose"
-    echo "  Golang | Nvm | Yarn | Mongodb | Jdk | LinuxImage | Samba | Nvidia"
-    echo "  LinuxImage | Samba | Nvidia"
-    echo "  AptOverHttps | SaveAllVBox"
     exit 0
+}
+
+Update() {
+    $UPDATE
+    sudo apt-get -y upgrade
+    sudo apt-get -y dist-upgrade
+    sudo apt autoremove -y
 }
 
 Vim() {
@@ -39,12 +51,6 @@ Git() {
         git config --global user.name "$username"
         git config --global push.default matching
     fi
-}
-
-GitCacheTimeout() {
-    echo -n "Please enter your timeout of git password cache in seconds: "
-    read timeout
-    git config credential.helper "cache --timeout=$timeout"
 }
 
 Zsh() {
@@ -95,42 +101,12 @@ Yarn() {
     $UPDATE && $INSTALL yarn
 }
 
-Mosquitto() {
-    sudo apt-add-repository -y ppa:mosquitto-dev/mosquitto-ppa
-    $UPDATE
-    $INSTALL mosquitto
-}
-
-Mongodb() {
-    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
-    echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
-    $UPDATE
-    $INSTALL mongodb-org
-}
-
 Jdk() {
     $INSTALL openjdk-8-jre
 }
 
 LinuxImage() {
     $APT_GET build-dep -y linux-image-$(uname -r)
-}
-
-Samba() {
-    $INSTALL samba samba-common system-config-samba
-    sudo smbpasswd -a `id -u`
-}
-
-Nvidia() {
-    sudo add-apt-repository -y ppa:graphics-drivers/ppa
-    $UPDATE
-    local latestVersion=`apt-cache search nvidia-\d+ | tail -n 1 | cut -d ' ' -f 1`
-    $INSTALL latestVersion
-    sudo apt-get -f install
-}
-
-AptOverHttps() {
-   $INSTALL apt-transport-https ca-certificates curl software-properties-common
 }
 
 Docker() {
@@ -149,6 +125,58 @@ DockerCompose() {
         echo "docker-compose installed at $dst"
     fi
     $dst --version
+}
+
+Mosquitto() {
+    sudo apt-add-repository -y ppa:mosquitto-dev/mosquitto-ppa
+    $UPDATE
+    $INSTALL mosquitto
+}
+
+Mongodb() {
+    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+    echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+    $UPDATE
+    $INSTALL mongodb-org
+}
+
+Samba() {
+    $INSTALL samba samba-common system-config-samba
+    sudo smbpasswd -a `id -u`
+}
+
+
+Nvidia() {
+    sudo add-apt-repository -y ppa:graphics-drivers/ppa
+    $UPDATE
+    local latestVersion=`apt-cache search nvidia-\d+ | tail -n 1 | cut -d ' ' -f 1`
+    $INSTALL latestVersion
+    sudo apt-get -f install
+}
+
+Chewing() {
+    $INSTALL ibus-chewing
+}
+
+Hostname() {
+    local hostname=/etc/hostname
+    local hosts=/etc/hosts
+    local old_name=`cat $hostname`
+    local new_name=$1
+    echo "set hostname to $new_name from $old_name"
+    sudo sed -i "s/$old_name/$new_name/g" $hostname
+    sudo sed -i "s/$old_name/$new_name/g" $hosts
+    exit 0
+}
+
+AptOverHttps() {
+   $INSTALL apt-transport-https ca-certificates curl software-properties-common
+}
+
+GitCacheTimeout() {
+    echo -n "Please enter your timeout of git password cache in seconds: "
+    read timeout
+    git config credential.helper "cache --timeout=$timeout"
 }
 
 SaveAllVBox() {
@@ -176,31 +204,12 @@ GuiBasics() {
     $INSTALL filezilla
 }
 
-Chewing() {
-    $INSTALL ibus-chewing
-}
-
 Custom() {
     echo "Define your custom action"
 }
 
-Hostname() {
-    local hostname=/etc/hostname
-    local hosts=/etc/hosts
-    local old_name=`cat $hostname`
-    local new_name=$1
-    echo "set hostname to $new_name from $old_name"
-    sudo sed -i "s/$old_name/$new_name/g" $hostname
-    sudo sed -i "s/$old_name/$new_name/g" $hosts
-    exit 0
-}
 
-Update() {
-    $UPDATE
-    sudo apt-get -y upgrade
-    sudo apt-get -y dist-upgrade
-    sudo apt autoremove -y
-}
+# Entry
 
 if [ -z "$1" ]; then
     Usage
