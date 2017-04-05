@@ -20,7 +20,7 @@ Usage() {
     echo "    GitCacheTimeout | AptOverHttps | SaveAllVBox"
     echo "  Other Helpers:"
     echo "    Basics      - includes vim, git, zsh, tmux, openssh-server, tree, build-essentila"
-    echo "    Gui_basics  - includes vim-gnome, terminator, easystroke, xdotool, filezilla"
+    echo "    GuiBasics   - includes vim-gnome, terminator, easystroke, xdotool, filezilla"
     echo "    Custom      - run your own custom combo installation"
     echo ""
     exit 0
