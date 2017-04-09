@@ -3,6 +3,7 @@
 APT_GET="sudo apt-get"
 INSTALL="$APT_GET install -y"
 UPDATE="$APT_GET update"
+DIST_VERSION=`lsb_release -a 2> /dev/null | grep Codename | cut -f 2`
 
 Usage() {
     echo "Usage: $0 [Options]"
@@ -14,7 +15,8 @@ Usage() {
     echo "    Golang | Python"
     echo "    Nvm | Yarn | Jdk | LinuxImage"
     echo "    Docker | DockerCompose"
-    echo "    Mosquitto | Mongodb | Samba"
+    echo "    PostgreSQL | Mongodb | Redis"
+    echo "    Mosquitto | Samba"
     echo "    Nvidia"
     echo "  Configuration Helpers:"
     echo "    GitCacheTimeout | AptOverHttps | SaveAllVBox"
@@ -97,7 +99,10 @@ Nvm() {
 
 Yarn() {
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+    local apt_list_yarn=/etc/apt/sources.list.d/yarn.list
+    if [ ! -f $ apt_list_yarn ]; then
+        echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee $apt_list_yarn
+    fi
     $UPDATE && $INSTALL yarn
 }
 
@@ -127,17 +132,34 @@ DockerCompose() {
     $dst --version
 }
 
-Mosquitto() {
-    sudo apt-add-repository -y ppa:mosquitto-dev/mosquitto-ppa
+PostgreSQL() {
+    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+    local apt_list_pgdg=/etc/apt/sources.list.d/pgdg.list
+    if [ ! -f $apt_list_pgdg ]; then
+        sudo echo "deb http://apt.postgresql.org/pub/repos/apt/ ${DIST_VERSION}-pgdg main" | sudo tee $apt_list_pgdg
+    fi
     $UPDATE
-    $INSTALL mosquitto
+    $INSTALL postgresql-9.6 
+}
+
+Redis() {
+    $INSTALL redis-server
 }
 
 Mongodb() {
     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
-    echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+    local apt_list_mongo=/etc/apt/sources.list.d/mongodb-org-3.4.list
+    if [ ! -f $apt_list_mongo ]; then
+        echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee $apt_list_mongo
+    fi
     $UPDATE
     $INSTALL mongodb-org
+}
+
+Mosquitto() {
+    sudo apt-add-repository -y ppa:mosquitto-dev/mosquitto-ppa
+    $UPDATE
+    $INSTALL mosquitto
 }
 
 Samba() {
