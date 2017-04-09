@@ -17,7 +17,7 @@ Usage() {
     echo "    Docker | DockerCompose"
     echo "    PostgreSQL | Mongodb | Redis"
     echo "    Mosquitto | Samba"
-    echo "    Nvidia"
+    echo "    NvidiaGraphicDriver"
     echo "  Configuration Helpers:"
     echo "    GitCacheTimeout | AptOverHttps | SaveAllVBox"
     echo "  Other Helpers:"
@@ -168,7 +168,7 @@ Samba() {
 }
 
 
-Nvidia() {
+NvidiaGraphicDriver() {
     sudo add-apt-repository -y ppa:graphics-drivers/ppa
     $UPDATE
     local latestVersion=`apt-cache search nvidia-\d+ | tail -n 1 | cut -d ' ' -f 1`
