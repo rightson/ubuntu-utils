@@ -13,13 +13,14 @@ Usage() {
     echo "  Installation Helpers:"
     echo "    Vim | Git | | Zsh | Tmux | Ssh"
     echo "    Golang | Python"
-    echo "    Nvm | Yarn | Jdk | LinuxImage"
+    echo "    Nvm | Yarn"
+    echo "    ProtocolBuffers [version] | Jdk | LinuxImage"
     echo "    Docker | DockerCompose"
     echo "    PostgreSQL | Mongodb | Redis"
     echo "    Mosquitto | Samba"
     echo "    NvidiaGraphicDriver"
     echo "  Configuration Helpers:"
-    echo "    GitCacheTimeout | AptOverHttps | SaveAllVBox"
+    echo "    Hostname [name] | GitCacheTimeout | AptOverHttps | SaveAllVBox"
     echo "  Other Helpers:"
     echo "    Basics      - includes vim, git, zsh, tmux, openssh-server, tree, build-essentila"
     echo "    GuiBasics   - includes vim-gnome, terminator, easystroke, xdotool, filezilla"
@@ -104,6 +105,22 @@ Yarn() {
         echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee $apt_list_yarn
     fi
     $UPDATE && $INSTALL yarn
+}
+
+ProtocolBuffers() {
+    local version=$1
+    if [ -z $version ]; then
+        version=3.0.0
+    fi
+    local workspace=`mktemp -d`
+    cd $workspace
+    wget https://github.com/google/protobuf/releases/download/v$version/protoc-$version-linux-x86_64.zip && \
+    unzip protoc-$version-linux-x86_64.zip && \
+    sudo cp bin/protoc /usr/local/bin/protoc && \
+    sudo rsync -av include/ /usr/local/include && \
+    rm protoc-$version-linux-x86_64.zip
+    cd -
+    rm -fr $workspace
 }
 
 Jdk() {
