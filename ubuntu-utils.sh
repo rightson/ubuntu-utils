@@ -151,10 +151,10 @@ DockerCompose() {
 }
 
 PostgreSQL() {
-    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
     local apt_list_pgdg=/etc/apt/sources.list.d/pgdg.list
     if [ ! -f $apt_list_pgdg ]; then
         sudo echo "deb http://apt.postgresql.org/pub/repos/apt/ ${DIST_VERSION}-pgdg main" | sudo tee $apt_list_pgdg
+        wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
     fi
     $UPDATE
     $INSTALL postgresql-9.6 
@@ -164,11 +164,12 @@ Redis() {
     $INSTALL redis-server
 }
 
+
 Mongodb() {
-    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
     local apt_list_mongo=/etc/apt/sources.list.d/mongodb-org-3.4.list
     if [ ! -f $apt_list_mongo ]; then
         echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee $apt_list_mongo
+        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
     fi
     $UPDATE
     $INSTALL mongodb-org
