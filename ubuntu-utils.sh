@@ -19,6 +19,7 @@ Usage() {
     echo "    PostgreSQL | Mongodb | Redis"
     echo "    Mosquitto | Samba"
     echo "    NvidiaGraphicDriver"
+    echo "    LibreOffice"
     echo "  Configuration Helpers:"
     echo "    Hostname [name] | GitCacheTimeout | AptOverHttps | SaveAllVBox"
     echo "  Other Helpers:"
@@ -201,6 +202,14 @@ NvidiaGraphicDriver() {
 
 Chewing() {
     $INSTALL ibus-chewing
+}
+
+LibreOffice() {
+    if [ -z "`apt-cache policy | grep libreoffice`" ]; then
+        sudo add-apt-repository -y ppa:libreoffice/ppa
+    fi
+    $UPDATE
+    sudo apt-get dist-upgrade -y
 }
 
 Hostname() {
