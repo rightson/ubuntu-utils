@@ -44,6 +44,10 @@ Vim() {
 }
 
 Git() {
+    if [ -z "`apt-cache policy | grep git-core`" ]; then
+        sudo add-apt-repository -y ppa:git-core/ppa
+    fi
+    $UPDATE
     $INSTALL git
     if [ -z "`git config --list | grep user.email`" ]; then
         echo -n "Please enter your email for git: "
