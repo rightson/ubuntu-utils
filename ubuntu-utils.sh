@@ -5,46 +5,26 @@ INSTALL="$APT_GET install -y"
 UPDATE="$APT_GET update"
 DIST_VERSION=`lsb_release -a 2> /dev/null | grep Codename | cut -f 2`
 
-Usage() {
-    echo "Usage: $0 [Options]"
-    echo ""
-    echo "Options:"
-    echo "    Update      - run apt-get update/upgrad/dist-upgrade and autoremove sequentially"
-    echo "  Installation Helpers:"
-    echo "    Vim | Git | | Zsh | Tmux | Ssh"
-    echo "    Golang | Python"
-    echo "    Nvm | Yarn"
-    echo "    ProtocolBuffers [version] | Jdk | LinuxImage"
-    echo "    Docker | DockerCompose"
-    echo "    PostgreSQL | Mongodb | Redis"
-    echo "    Mosquitto | Samba"
-    echo "    NvidiaGraphicDriver"
-    echo "    LibreOffice"
-    echo "  Configuration Helpers:"
-    echo "    Hostname [name] | GitCacheTimeout | AptOverHttps | SaveAllVBox"
-    echo "  Other Helpers:"
-    echo "    Basics      - includes vim, git, zsh, tmux, openssh-server, tree, build-essentila"
-    echo "    GuiBasics   - includes vim-gnome, terminator, easystroke, xdotool, filezilla"
-    echo "    Custom      - run your own custom combo installation"
-    echo ""
-    exit 0
+function Usage() {
+    echo -e "Usages: $0 CMD\nCMD:"
+    grep "^function" $0 | sed 's/function/  /g' | sed 's/[{()]//g'
 }
 
-Update() {
+function Update() {
     $UPDATE
     sudo apt-get -y upgrade
     sudo apt-get -y dist-upgrade
     sudo apt autoremove -y
 }
 
-Vim() {
+function Vim() {
     $INSTALL vim
     $INSTALL ctags
     $INSTALL cscope
     git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 }
 
-Git() {
+function Git() {
     if [ -z "`apt-cache policy | grep git-core`" ]; then
         sudo add-apt-repository -y ppa:git-core/ppa
     fi
@@ -61,7 +41,7 @@ Git() {
     fi
 }
 
-Zsh() {
+function Zsh() {
     $INSTALL curl
     $INSTALL zsh
     chsh -s `which zsh`
@@ -72,16 +52,16 @@ Zsh() {
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 }
 
-Tmux() {
+function Tmux() {
     $INSTALL tmux
     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 }
 
-Ssh() {
+function Ssh() {
     $INSTALL openssh-server
 }
 
-Python() {
+function Python() {
     $INSTALL python3-virtualenv
     $INSTALL python3-venv
     $INSTALL python3-pip
@@ -92,19 +72,19 @@ Python() {
     sudo -H pip3 install jupyter
 }
 
-Golang() {
+function Golang() {
     sudo add-apt-repository -y ppa:longsleep/golang-backports
     $UPDATE
     $INSTALL golang-go
 }
 
-Nvm() {
+function Nvm() {
     curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.1/install.sh | bash
     source $PROFILE
     nvm install stable
 }
 
-Yarn() {
+function Yarn() {
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
     local apt_list_yarn=/etc/apt/sources.list.d/yarn.list
     if [ ! -f $ apt_list_yarn ]; then
@@ -113,7 +93,7 @@ Yarn() {
     $UPDATE && $INSTALL yarn
 }
 
-ProtocolBuffers() {
+function ProtocolBuffers() {
     local version=$1
     if [ -z $version ]; then
         version=3.0.0
@@ -129,22 +109,22 @@ ProtocolBuffers() {
     rm -fr $workspace
 }
 
-Jdk() {
+function Jdk() {
     $INSTALL openjdk-8-jre
 }
 
-LinuxImage() {
+function LinuxImage() {
     $APT_GET build-dep -y linux-image-$(uname -r)
 }
 
-Docker() {
+function Docker() {
 	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 	sudo add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 	$UPDATE
 	$INSTALL docker-ce
 }
 
-DockerCompose() {
+function DockerCompose() {
     local dst=/usr/local/bin/docker-compose
     if [ ! -f $dst ]; then
         sudo curl -L "https://github.com/docker/compose/releases/download/1.11.2/docker-compose-$(uname -s)-$(uname -m)" -o $dst
@@ -155,7 +135,7 @@ DockerCompose() {
     $dst --version
 }
 
-PostgreSQL() {
+function PostgreSQL() {
     local apt_list_pgdg=/etc/apt/sources.list.d/pgdg.list
     if [ ! -f $apt_list_pgdg ]; then
         sudo echo "deb http://apt.postgresql.org/pub/repos/apt/ ${DIST_VERSION}-pgdg main" | sudo tee $apt_list_pgdg
@@ -165,12 +145,12 @@ PostgreSQL() {
     $INSTALL postgresql-9.6 
 }
 
-Redis() {
+function Redis() {
     $INSTALL redis-server
 }
 
 
-Mongodb() {
+function Mongodb() {
     local apt_list_mongo=/etc/apt/sources.list.d/mongodb-org-3.4.list
     if [ ! -f $apt_list_mongo ]; then
         echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee $apt_list_mongo
@@ -180,19 +160,19 @@ Mongodb() {
     $INSTALL mongodb-org
 }
 
-Mosquitto() {
+function Mosquitto() {
     sudo apt-add-repository -y ppa:mosquitto-dev/mosquitto-ppa
     $UPDATE
     $INSTALL mosquitto
 }
 
-Samba() {
+function Samba() {
     $INSTALL samba samba-common system-config-samba
     sudo smbpasswd -a `id -u`
 }
 
 
-NvidiaGraphicDriver() {
+function NvidiaGraphicDriver() {
     sudo add-apt-repository -y ppa:graphics-drivers/ppa
     $UPDATE
     local latestVersion=`apt-cache search nvidia-\d+ | tail -n 1 | cut -d ' ' -f 1`
@@ -200,11 +180,11 @@ NvidiaGraphicDriver() {
     sudo apt-get -f install
 }
 
-Chewing() {
+function Chewing() {
     $INSTALL ibus-chewing
 }
 
-LibreOffice() {
+function LibreOffice() {
     if [ -z "`apt-cache policy | grep libreoffice`" ]; then
         sudo add-apt-repository -y ppa:libreoffice/ppa
     fi
@@ -212,7 +192,7 @@ LibreOffice() {
     sudo apt-get dist-upgrade -y
 }
 
-Hostname() {
+function Hostname() {
     local hostname=/etc/hostname
     local hosts=/etc/hosts
     local old_name=`cat $hostname`
@@ -223,24 +203,24 @@ Hostname() {
     exit 0
 }
 
-AptOverHttps() {
+function AptOverHttps() {
    $INSTALL apt-transport-https ca-certificates curl software-properties-common
 }
 
-GitCacheTimeout() {
+function GitCacheTimeout() {
     echo -n "Please enter your timeout of git password cache in seconds: "
     read timeout
     git config credential.helper "cache --timeout=$timeout"
 }
 
-SaveAllVBox() {
+function SaveAllVBox() {
     local option=${1-savestate}
     cmd="VBoxManage list runningvms | cut -d ' ' -f1 | xargs -I{} VBoxManage controlvm {} $option"
     echo $cmd
     $cmd
 }
 
-Basics() {
+function Basics() {
     Vim
     Git
     Zsh
@@ -250,7 +230,7 @@ Basics() {
     $INSTALL build-essential
 }
 
-GuiBasics() {
+function GuiBasics() {
     $INSTALL vim-gnome
     $INSTALL terminator
     $INSTALL easystroke
