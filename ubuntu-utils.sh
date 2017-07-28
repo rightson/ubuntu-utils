@@ -160,6 +160,16 @@ function Mongodb() {
     $INSTALL mongodb-org
 }
 
+function Neo4j() {
+    let apt_list_neo4j=/etc/apt/sources.list.d/neo4j.list
+    if [ ! -f $apt_list_neo4j ]; then
+        wget -O - https://debian.neo4j.org/neotechnology.gpg.key | sudo apt-key add -
+        echo 'deb https://debian.neo4j.org/repo stable/' | sudo tee /etc/apt/sources.list.d/neo4j.list
+    fi
+    $UPDATE
+    $INSTALL neo4j
+}
+
 function Mosquitto() {
     sudo apt-add-repository -y ppa:mosquitto-dev/mosquitto-ppa
     $UPDATE
