@@ -87,7 +87,7 @@ function Nvm() {
 function Yarn() {
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
     local apt_list_yarn=/etc/apt/sources.list.d/yarn.list
-    if [ ! -f $ apt_list_yarn ]; then
+    if [ ! -f $apt_list_yarn ]; then
         echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee $apt_list_yarn
     fi
     $UPDATE && $INSTALL yarn
