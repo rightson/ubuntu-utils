@@ -220,7 +220,17 @@ function AptOverHttps() {
 function GitCacheTimeout() {
     echo -n "Please enter your timeout of git password cache in seconds: "
     read timeout
-    git config credential.helper "cache --timeout=$timeout"
+    git config $* credential.helper "cache --timeout=$timeout"
+}
+
+function GitVimDiffEnable() {
+    git config --global diff.tool vimdiff
+    git config --global difftool.prompt false
+    git config --global alias.vimdiff difftool
+}
+
+function GitUseHttps() {
+    git config --global url."https://".insteadOf git://
 }
 
 function SaveAllVBox() {
